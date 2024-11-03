@@ -1,5 +1,6 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
+import 'dart:convert';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,9 +20,232 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(0, 30, 255, 0)),
         ),
+        debugShowCheckedModeBanner: false,
         home: MyHomePage(),
+      ),
+    );
+  }
+}
+
+class ModelPage extends StatefulWidget {
+  @override
+  State<ModelPage> createState() => _ModelPageState();
+}
+
+class _ModelPageState extends State<ModelPage> {
+  final ageController = TextEditingController();
+  final sexController = TextEditingController();
+  final cpController = TextEditingController();
+  final trestbpsController = TextEditingController();
+  final cholController = TextEditingController();
+  final fbsController = TextEditingController();
+  final restecgController = TextEditingController();
+  final thalachController = TextEditingController();
+  final exangController = TextEditingController();
+  final oldpeakController = TextEditingController();
+  final slopeController = TextEditingController();
+  final caController = TextEditingController();
+  final thalController = TextEditingController();
+  String? modelResponse;
+
+  @override
+  void dispose() {
+    ageController.dispose();
+    sexController.dispose();
+    cpController.dispose();
+    trestbpsController.dispose();
+    cholController.dispose();
+    fbsController.dispose();
+    restecgController.dispose();
+    thalachController.dispose();
+    exangController.dispose();
+    oldpeakController.dispose();
+    slopeController.dispose();
+    caController.dispose();
+    thalController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: ageController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Age',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: sexController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Sex (1 = Male, 0 = Female)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: cpController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Chest Pain Type (cp)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: trestbpsController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Resting Blood Pressure (trestbps)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: cholController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Cholesterol (chol)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: fbsController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Fasting Blood Sugar (fbs)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: restecgController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Resting ECG Results (restecg)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: thalachController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Max Heart Rate Achieved (thalach)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: exangController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Exercise Induced Angina (exang)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: oldpeakController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'ST Depression (oldpeak)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: slopeController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Slope of Peak Exercise ST Segment (slope)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: caController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Number of Major Vessels (ca)',
+                ),
+              ),
+            ),
+            Container(
+              width: 300, // Establecer un ancho específico
+              child: TextField(
+                controller: thalController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Thalassemia (thal)',
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    appState
+                        .callModel(
+                      ageController.text,
+                      sexController.text,
+                      cpController.text,
+                      trestbpsController.text,
+                      cholController.text,
+                      fbsController.text,
+                      restecgController.text,
+                      thalachController.text,
+                      exangController.text,
+                      oldpeakController.text,
+                      slopeController.text,
+                      caController.text,
+                      thalController.text,
+                    )
+                        .then((value) {
+                      setState(() {
+                        modelResponse = value;
+                      });
+                    });
+                  },
+                  child: Text('Predict'),
+                ),
+                if (modelResponse != null) ...[
+                  SizedBox(
+                      height:
+                          20), // Añadir un espacio entre el botón y la respuesta
+                  Text('Response: ${json.decode(modelResponse!)['score']}'),
+                ]
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -30,8 +254,54 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   var history = <WordPair>[];
+  
 
   GlobalKey? historyListKey;
+
+  Future<String> callModel(
+      String age,
+      String sex,
+      String cp,
+      String trestbps,
+      String chol,
+      String fbs,
+      String restecg,
+      String thalach,
+      String exang,
+      String oldpeak,
+      String slope,
+      String ca,
+      String thal) async {
+    final url = Uri.parse("https://fastapiml-latest-15yk.onrender.com/score");
+    final headers = {"Content-Type": "application/json;charset=UTF-8"};
+    try {
+      final prediction_instance = {
+        "age": int.parse(age),
+        "sex": int.parse(sex),
+        "cp": int.parse(cp),
+        "trestbps": int.parse(trestbps),
+        "chol": int.parse(chol),
+        "fbs": int.parse(fbs),
+        "restecg": int.parse(restecg),
+        "thalach": int.parse(thalach),
+        "exang": int.parse(exang),
+        "oldpeak": double.parse(oldpeak),
+        "slope": int.parse(slope),
+        "ca": int.parse(ca),
+        "thal": int.parse(thal)
+      };
+      final res = await http.post(url,
+          headers: headers, body: jsonEncode(prediction_instance));
+      if (res.statusCode == 200) {
+        final json_prediction = res.body;
+        return json_prediction;
+      } else {
+        return 'Error: Status ${res.statusCode}';
+      }
+    } catch (e) {
+      return 'Error: ${e.toString()}';
+    }
+  }
 
   void getNext() {
     history.insert(0, current);
@@ -79,6 +349,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         page = FavoritesPage();
         break;
+      case 2:
+        page = ModelPage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -104,6 +377,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(child: mainArea),
                 SafeArea(
                   child: BottomNavigationBar(
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .surface, // Asegura el color de fondo
+                    type: BottomNavigationBarType.fixed,
                     items: [
                       BottomNavigationBarItem(
                         icon: Icon(Icons.home),
@@ -113,6 +390,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         icon: Icon(Icons.favorite),
                         label: 'Favorites',
                       ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.rocket),
+                        label: 'Model',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.rocket_launch),
+                        label: 'Retrain',
+                      )
                     ],
                     currentIndex: selectedIndex,
                     onTap: (value) {
@@ -139,6 +424,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         icon: Icon(Icons.favorite),
                         label: Text('Favorites'),
                       ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.rocket),
+                        label: Text('Model'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.rocket_launch),
+                        label: Text('Retrain'),
+                      )
                     ],
                     selectedIndex: selectedIndex,
                     onDestinationSelected: (value) {
@@ -348,7 +641,7 @@ class _HistoryListViewState extends State<HistoryListView> {
                   appState.toggleFavorite(pair);
                 },
                 icon: appState.favorites.contains(pair)
-                    ? Icon(Icons.favorite, size: 12)
+                    ? Icon(Icons.favorite, size: 12)      
                     : SizedBox(),
                 label: Text(
                   pair.asLowerCase,
